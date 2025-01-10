@@ -1,7 +1,7 @@
 import unittest
 
-from preparedata.loaddata.XmlProcessor import XmlProcessor
-from preparedata.loaddata.tests.MockDataLoader import MockDataLoader
+import MockDataLoader
+from code.loaddata.XmlProcessor import XmlProcessor
 
 # Mock column mappings
 COLUMN_MAPPINGS = {
@@ -15,7 +15,7 @@ COLUMN_MAPPINGS = {
 class TestXmlProcessor(unittest.TestCase):
 
     def setUp(self):
-        self.data = MockDataLoader().load_data()
+        self.data = MockDataLoader.MockDataLoader().load_data()
         self.xml_processor = XmlProcessor(self.data)
 
     def test_parse_shoton(self):
