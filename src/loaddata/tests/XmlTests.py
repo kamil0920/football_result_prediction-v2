@@ -1,7 +1,7 @@
 import unittest
 
 import MockDataLoader
-from code.loaddata.XmlProcessor import XmlProcessor
+from src.loaddata.XmlProcessor import XmlProcessor
 
 # Mock column mappings
 COLUMN_MAPPINGS = {

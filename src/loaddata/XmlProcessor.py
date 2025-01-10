@@ -49,8 +49,8 @@ class XmlProcessor:
         else:
             return 0
 
-    def process_data(self, data):
-        df = pd.DataFrame(data)
+    def process_data(self, df):
+        # df = pd.DataFrame(data)
 
         for column_mapping in column_mappings:
             column, xml_col, team = column_mapping

@@ -71,9 +71,9 @@ SQL_QUERY_MATCH = "SELECT m.match_api_id," \
                   " ORDER by date"
 SQL_QUERY_PLAYERS = f"SELECT * FROM Player_Attributes"
 
-PATH_DB = "../data/database.sqlite"
-CSV_PATH_MATCH = "../data/raw/match_details.csv"
-CSV_PATH_PLAYER_ATTR = "../data/raw/player_attributes.csv"
+PATH_DB = "../../data/database.sqlite"
+CSV_PATH_MATCH = "../../data/raw/match_details.csv"
+CSV_PATH_PLAYER_ATTR = "../../data/raw/player_attributes.csv"
 
 
 def table_to_csv(db_path, csv_path, query):
@@ -82,19 +82,23 @@ def table_to_csv(db_path, csv_path, query):
     df = pd.read_sql(query, conn)
 
 
-    if not os.path.exists('../data/raw'):
-        os.makedirs('../data/raw')
+    if not os.path.exists('../../data/raw'):
+        os.makedirs('../../data/raw')
+
+
+    if 'match_details' in csv_path:
+        xml_processor = XmlProcessor.XmlProcessor()
+        xml_processor.process_data(df)
+
 
     df.to_csv(csv_path, index=False)
+
     conn.close()
 
 
 def execute_data_loader():
     table_to_csv(PATH_DB, CSV_PATH_MATCH, SQL_QUERY_MATCH)
     table_to_csv(PATH_DB, CSV_PATH_PLAYER_ATTR, SQL_QUERY_PLAYERS)
-
-    xml_processor = XmlProcessor.XmlProcessor
-
 
 
 if __name__ == "__main__":
