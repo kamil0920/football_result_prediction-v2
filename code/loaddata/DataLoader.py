@@ -1,6 +1,7 @@
 import os
 import sqlite3
 import pandas as pd
+import XmlProcessor
 
 SQL_QUERY_MATCH = "SELECT m.match_api_id," \
                   " season," \
@@ -91,6 +92,9 @@ def table_to_csv(db_path, csv_path, query):
 def execute_data_loader():
     table_to_csv(PATH_DB, CSV_PATH_MATCH, SQL_QUERY_MATCH)
     table_to_csv(PATH_DB, CSV_PATH_PLAYER_ATTR, SQL_QUERY_PLAYERS)
+
+    xml_processor = XmlProcessor.XmlProcessor
+
 
 
 if __name__ == "__main__":
