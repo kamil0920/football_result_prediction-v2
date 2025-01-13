@@ -50,8 +50,6 @@ class XmlProcessor:
             return 0
 
     def process_data(self, df):
-        # df = pd.DataFrame(data)
-
         for column_mapping in column_mappings:
             column, xml_col, team = column_mapping
 
@@ -60,6 +58,6 @@ class XmlProcessor:
 
         unique_columns = list(set([x[0] for x in column_mappings]))
         shoton, possession = [col for col in unique_columns if col == 'shoton' or col == 'possession']
-        df = df.drop([shoton, possession], axis=1)
+        df.drop([shoton, possession], axis=1, inplace=True)
 
         return df

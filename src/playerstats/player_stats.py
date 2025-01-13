@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-def get_player_overall_rating_(player_id, match_date, df_player_attr):
+def get_player_overall_rating_(player_id, match_date, df_player_attr,n_previous=10):
     filtered = df_player_attr[
         (df_player_attr['player_api_id'] == player_id) &
         (df_player_attr['date'] <= match_date)
@@ -11,9 +11,9 @@ def get_player_overall_rating_(player_id, match_date, df_player_attr):
         return np.nan
 
     filtered_sorted = filtered.sort_values(by='date', ascending=False)
-    latest_rating = filtered_sorted.iloc[0]['overall_rating']
+    latest_rating = filtered_sorted.iloc[-n_previous:]['overall_rating']
 
-    return latest_rating
+    return np.mean(latest_rating)
 
 def get_player_id_for_team_(
     row,
@@ -42,7 +42,8 @@ def get_player_id_for_team_(
     fallback_id = col_values.value_counts().idxmax()
     return fallback_id
 
-def calculate_player_stat_(match_row, df_matches, df_player_attr, players):
+
+def calculate_player_stat(match_row, df_matches, df_player_attr, players):
     player_stats_dict = {}
     match_date = match_row['date']
     player_stats_dict['match_api_id'] = match_row['match_api_id']

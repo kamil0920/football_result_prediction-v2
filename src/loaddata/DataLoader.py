@@ -88,7 +88,7 @@ def table_to_csv(db_path, csv_path, query):
 
     if 'match_details' in csv_path:
         xml_processor = XmlProcessor.XmlProcessor()
-        xml_processor.process_data(df)
+        df = xml_processor.process_data(df)
 
 
     df.to_csv(csv_path, index=False)

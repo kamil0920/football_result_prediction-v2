@@ -4,7 +4,7 @@ import pandas as pd
 from src.playerstats.player_stats import (
     get_player_overall_rating_,
     get_player_id_for_team_,
-    calculate_player_stat_
+    calculate_player_stat
 )
 
 
@@ -53,15 +53,13 @@ def df_matches():
 
 
 def test_get_player_overall_rating_normal_case(df_player_attr):
-    """
-    Test a case where the data is present and we get the correct rating
-    for a player on or before a certain date.
-    """
     player_id = 1001
     match_date = pd.to_datetime("2010-06-15")
-    rating = get_player_overall_rating_(player_id, match_date, df_player_attr)
+    rating = get_player_overall_rating_(
+        player_id, match_date, df_player_attr, n_previous=10
+    )
 
-    assert rating == 65
+    assert rating == 62.5
 
 
 def test_get_player_overall_rating_no_data(df_player_attr):
@@ -102,9 +100,6 @@ def test_get_player_id_for_team_with_fallback(df_matches):
         df_matches=df_matches,
         n_previous=10
     )
-    # same_team = home_team=3001 => match 2001 & 2002
-    # home_player_1 for match 2001 is 1001
-    # so fallback_id should be 1001
     assert found_id == 1001, "Should fallback to the most frequent ID among recent matches."
 
 
@@ -112,13 +107,11 @@ def test_get_player_id_for_team_no_history(df_matches):
     """
     If there's no previous match for that team, we expect NaN.
     """
-    # We'll make a row that references a new team ID or
-    # is so early it has no prior matches. Let's create it on the fly.
     new_row = {
         'match_api_id': 9999,
-        'date': pd.to_datetime('2010-01-01'),  # earliest possible
-        'home_team': 9998,  # new team
-        'home_player_1': np.nan  # missing
+        'date': pd.to_datetime('2010-01-01'),
+        'home_team': 9998,
+        'home_player_1': np.nan
     }
     row_series = pd.Series(new_row)
 
@@ -133,14 +126,10 @@ def test_get_player_id_for_team_no_history(df_matches):
 
 
 def test_calculate_player_stat_integration(df_matches, df_player_attr):
-    """
-    Test the main function in an integration sense. We pass in one row
-    and ensure it produces the correct ratings dictionary.
-    """
     row = df_matches.iloc[0]
     players = ['home_player_1', 'away_player_1']
 
-    result_dict = calculate_player_stat_(
+    result_dict = calculate_player_stat(
         match_row=row,
         df_matches=df_matches,
         df_player_attr=df_player_attr,
@@ -148,11 +137,8 @@ def test_calculate_player_stat_integration(df_matches, df_player_attr):
     )
 
     assert 'match_api_id' in result_dict
-    assert 'player_rating_home_player_1' in result_dict
-    assert 'player_rating_away_player_1' in result_dict
-
     assert result_dict['match_api_id'] == 2001
 
-    assert result_dict['player_rating_home_player_1'] == 65
+    assert result_dict['player_rating_home_player_1'] == 62.5
 
     assert result_dict['player_rating_away_player_1'] == 70
