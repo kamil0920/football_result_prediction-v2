@@ -8,12 +8,19 @@ def get_player_overall_rating_(player_id, match_date, df_player_attr,n_previous=
     ]
 
     if filtered.empty:
-        return np.nan
+        return np.nan, np.nan, np.nan, np.nan
 
     filtered_sorted = filtered.sort_values(by='date', ascending=False)
-    latest_rating = filtered_sorted.iloc[-n_previous:]['overall_rating']
 
-    return np.mean(latest_rating)
+    filtered_subset = filtered_sorted.head(n_previous)
+
+    # Compute the means
+    latest_rating = filtered_subset['overall_rating'].mean()
+    acceleration_rating = filtered_subset['acceleration'].mean()
+    strength_rating = filtered_subset['strength'].mean()
+    aggression_rating = filtered_subset['aggression'].mean()
+
+    return latest_rating, acceleration_rating, strength_rating, aggression_rating
 
 def get_player_id_for_team_(
     row,
@@ -59,13 +66,20 @@ def calculate_player_stat(match_row, df_matches, df_player_attr, players):
             n_previous=10
         )
 
-        rating = get_player_overall_rating_(
+        overall_rating, acceleration_rating, strength_rating, aggression_rating  = get_player_overall_rating_(
             player_id=player_id,
             match_date=match_date,
             df_player_attr=df_player_attr
         )
 
         rating_col_name = f"player_rating_{player}"
-        player_stats_dict[rating_col_name] = rating if not np.isnan(rating) else np.nan
+        acceleration_rating_col_name = f"player_acceleration_rating_{player}"
+        strength_rating_col_name = f"player_strength_rating_{player}"
+        aggression_rating_col_name = f"player_aggression_rating_{player}"
+
+        player_stats_dict[rating_col_name] = overall_rating if not np.isnan(overall_rating) else np.nan
+        player_stats_dict[acceleration_rating_col_name] = overall_rating if not np.isnan(acceleration_rating) else np.nan
+        player_stats_dict[strength_rating_col_name] = overall_rating if not np.isnan(strength_rating) else np.nan
+        player_stats_dict[aggression_rating_col_name] = overall_rating if not np.isnan(aggression_rating) else np.nan
 
     return player_stats_dict

@@ -22,7 +22,10 @@ def df_player_attr():
             '2010-01-15',
             '2010-07-01'
         ],
-        'overall_rating': [60, 65, 70, 75, 68]
+        'overall_rating': [60, 65, 70, 75, 68],
+        'acceleration': [60, 65, 70, 75, 68],
+        'strength': [60, 65, 70, 75, 68],
+        'aggression': [60, 65, 70, 75, 68],
     }
     df = pd.DataFrame(data)
     df['date'] = pd.to_datetime(df['date'])
@@ -55,11 +58,14 @@ def df_matches():
 def test_get_player_overall_rating_normal_case(df_player_attr):
     player_id = 1001
     match_date = pd.to_datetime("2010-06-15")
-    rating = get_player_overall_rating_(
+    rating, acceleration, strength, aggression = get_player_overall_rating_(
         player_id, match_date, df_player_attr, n_previous=10
     )
 
     assert rating == 62.5
+    assert acceleration == 62.5
+    assert strength == 62.5
+    assert aggression == 62.5
 
 
 def test_get_player_overall_rating_no_data(df_player_attr):
@@ -68,7 +74,7 @@ def test_get_player_overall_rating_no_data(df_player_attr):
     """
     player_id = 9999
     match_date = pd.to_datetime("2010-06-15")
-    rating = get_player_overall_rating_(player_id, match_date, df_player_attr)
+    rating, acceleration, strength, aggression = get_player_overall_rating_(player_id, match_date, df_player_attr)
     assert np.isnan(rating), "Rating should be NaN for unknown player."
 
 
