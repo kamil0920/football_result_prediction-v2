@@ -72,10 +72,10 @@ def calculate_player_stat(match_row, df_matches, df_player_attr, players):
             df_player_attr=df_player_attr
         )
 
-        rating_col_name = f"player_rating_{player}"
-        acceleration_rating_col_name = f"player_acceleration_rating_{player}"
-        strength_rating_col_name = f"player_strength_rating_{player}"
-        aggression_rating_col_name = f"player_aggression_rating_{player}"
+        rating_col_name = f"rating_{player}"
+        acceleration_rating_col_name = f"acceleration_rating_{player}"
+        strength_rating_col_name = f"strength_rating_{player}"
+        aggression_rating_col_name = f"aggression_rating_{player}"
 
         player_stats_dict[rating_col_name] = overall_rating if not np.isnan(overall_rating) else np.nan
         player_stats_dict[acceleration_rating_col_name] = overall_rating if not np.isnan(acceleration_rating) else np.nan
