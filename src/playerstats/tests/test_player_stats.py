@@ -4,7 +4,7 @@ import pandas as pd
 from src.playerstats.player_stats import (
     get_player_overall_rating_,
     get_player_id_for_team_,
-    calculate_player_stat
+    get_player_stat
 )
 
 
@@ -135,7 +135,7 @@ def test_calculate_player_stat_integration(df_matches, df_player_attr):
     row = df_matches.iloc[0]
     players = ['home_player_1', 'away_player_1']
 
-    result_dict = calculate_player_stat(
+    result_dict = get_player_stat(
         match_row=row,
         df_matches=df_matches,
         df_player_attr=df_player_attr,
