@@ -118,7 +118,7 @@ class ShiftDataPreprocessor:
             shifted_col = f"{feature}_shifted"
             shifted_df[shifted_col] = shifted_df.groupby('team')[feature].shift(1)
 
-        # STEP 2: Fill NaN or 0 with rolling mean (past)
+        # STEP 2: Fill NaN or 0 with rolling mean
         for feature in features_to_shift:
             shifted_col = f"{feature}_shifted"
             shifted_df[shifted_col] = (
@@ -154,8 +154,11 @@ class ShiftDataPreprocessor:
 
         home_prev = self.team_df[self.team_df['is_home'] == 1][['match_api_id', 'team']].copy()
 
+        shifted_cols = team_df_shifted.filter(like="_shifted").columns  # all cols containing '_shifted'
+        columns_needed = ["match_api_id", "team"] + list(shifted_cols)
+
         home_prev = home_prev.merge(
-            team_df_shifted,
+            team_df_shifted[columns_needed],
             on=['match_api_id', 'team'],
             how='left'
         )
@@ -165,7 +168,7 @@ class ShiftDataPreprocessor:
         away_prev = self.team_df[self.team_df['is_home'] == 0][['match_api_id', 'team']].copy()
 
         away_prev = away_prev.merge(
-            team_df_shifted,
+            team_df_shifted[columns_needed],
             on=['match_api_id', 'team'],
             how='left'
         )
@@ -175,9 +178,8 @@ class ShiftDataPreprocessor:
         self.df_original = self.df_original.merge(home_prev, on='match_api_id', how='left')
         self.df_original = self.df_original.merge(away_prev, on='match_api_id', how='left')
 
-        original_home_features = ['home_shoton', 'home_possession', 'home_prev_team_possession', 'away_prev_team_possession']
-
-        original_away_features = ['away_shoton', 'away_possession', 'home_prev_team_possession', 'away_prev_team_possession']
+        original_home_features = ['home_shoton', 'home_possession', 'home_prev_team' ]
+        original_away_features = ['away_shoton', 'away_possession', 'away_prev_team' ]
 
         df_final = self.df_original.drop(columns=original_home_features + original_away_features)
 
