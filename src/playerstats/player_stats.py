@@ -72,7 +72,7 @@ def get_player_stat(match_row, df_matches, df_player_attr, players):
             df_player_attr=df_player_attr
         )
 
-        rating_col_name = f"rating_{player}"
+        rating_col_name = f"overall_rating_{player}"
         acceleration_rating_col_name = f"acceleration_rating_{player}"
         strength_rating_col_name = f"strength_rating_{player}"
         aggression_rating_col_name = f"aggression_rating_{player}"

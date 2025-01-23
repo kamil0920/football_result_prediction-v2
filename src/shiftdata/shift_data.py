@@ -158,8 +158,8 @@ class ShiftDataPreprocessor:
         self.df_original = self.df_original.merge(home_prev, on='match_api_id', how='left')
         self.df_original = self.df_original.merge(away_prev, on='match_api_id', how='left')
 
-        original_home_features = ['home_shoton', 'home_possession', 'home_prev_team' ]
-        original_away_features = ['away_shoton', 'away_possession', 'away_prev_team' ]
+        original_home_features = ['home_shoton', 'home_team_goal', 'home_possession', 'home_prev_team' ]
+        original_away_features = ['away_shoton', 'away_team_goal', 'away_possession', 'away_prev_team' ]
 
         df_final = self.df_original.drop(columns=original_home_features + original_away_features)
 
