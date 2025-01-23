@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 
-def get_player_overall_rating_(player_id, match_date, df_player_attr,n_previous=10):
+def get_player_overall_rating_from_previous_N_last_(player_id, match_date, df_player_attr,n_previous=10):
     filtered = df_player_attr[
         (df_player_attr['player_api_id'] == player_id) &
-        (df_player_attr['date'] <= match_date)
+        (df_player_attr['date'] < match_date)
     ]
 
     if filtered.empty:
@@ -50,7 +50,7 @@ def get_player_id_for_team_(
     return fallback_id
 
 
-def calculate_player_stat(match_row, df_matches, df_player_attr, players):
+def get_player_stat(match_row, df_matches, df_player_attr, players):
     player_stats_dict = {}
     match_date = match_row['date']
     player_stats_dict['match_api_id'] = match_row['match_api_id']
@@ -66,16 +66,16 @@ def calculate_player_stat(match_row, df_matches, df_player_attr, players):
             n_previous=10
         )
 
-        overall_rating, acceleration_rating, strength_rating, aggression_rating  = get_player_overall_rating_(
+        overall_rating, acceleration_rating, strength_rating, aggression_rating  = get_player_overall_rating_from_previous_N_last_(
             player_id=player_id,
             match_date=match_date,
             df_player_attr=df_player_attr
         )
 
-        rating_col_name = f"player_rating_{player}"
-        acceleration_rating_col_name = f"player_acceleration_rating_{player}"
-        strength_rating_col_name = f"player_strength_rating_{player}"
-        aggression_rating_col_name = f"player_aggression_rating_{player}"
+        rating_col_name = f"rating_{player}"
+        acceleration_rating_col_name = f"acceleration_rating_{player}"
+        strength_rating_col_name = f"strength_rating_{player}"
+        aggression_rating_col_name = f"aggression_rating_{player}"
 
         player_stats_dict[rating_col_name] = overall_rating if not np.isnan(overall_rating) else np.nan
         player_stats_dict[acceleration_rating_col_name] = overall_rating if not np.isnan(acceleration_rating) else np.nan

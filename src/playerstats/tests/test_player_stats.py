@@ -2,9 +2,9 @@ import pytest
 import numpy as np
 import pandas as pd
 from src.playerstats.player_stats import (
-    get_player_overall_rating_,
+    get_player_overall_rating_from_previous_N_last_,
     get_player_id_for_team_,
-    calculate_player_stat
+    get_player_stat
 )
 
 
@@ -58,7 +58,7 @@ def df_matches():
 def test_get_player_overall_rating_normal_case(df_player_attr):
     player_id = 1001
     match_date = pd.to_datetime("2010-06-15")
-    rating, acceleration, strength, aggression = get_player_overall_rating_(
+    rating, acceleration, strength, aggression = get_player_overall_rating_from_previous_N_last_(
         player_id, match_date, df_player_attr, n_previous=10
     )
 
@@ -74,7 +74,7 @@ def test_get_player_overall_rating_no_data(df_player_attr):
     """
     player_id = 9999
     match_date = pd.to_datetime("2010-06-15")
-    rating, acceleration, strength, aggression = get_player_overall_rating_(player_id, match_date, df_player_attr)
+    rating, acceleration, strength, aggression = get_player_overall_rating_from_previous_N_last_(player_id, match_date, df_player_attr)
     assert np.isnan(rating), "Rating should be NaN for unknown player."
 
 
@@ -135,7 +135,7 @@ def test_calculate_player_stat_integration(df_matches, df_player_attr):
     row = df_matches.iloc[0]
     players = ['home_player_1', 'away_player_1']
 
-    result_dict = calculate_player_stat(
+    result_dict = get_player_stat(
         match_row=row,
         df_matches=df_matches,
         df_player_attr=df_player_attr,
@@ -145,6 +145,6 @@ def test_calculate_player_stat_integration(df_matches, df_player_attr):
     assert 'match_api_id' in result_dict
     assert result_dict['match_api_id'] == 2001
 
-    assert result_dict['player_rating_home_player_1'] == 62.5
+    assert result_dict['rating_home_player_1'] == 62.5
 
-    assert result_dict['player_rating_away_player_1'] == 70
+    assert result_dict['rating_away_player_1'] == 70
