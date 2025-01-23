@@ -50,12 +50,11 @@ class ShiftDataPreprocessor:
             f'{team_role}shoton': 'team_shoton',
             f'{team_role}possession': 'team_possession'
         }
-        selected_df = selected_df.rename(columns=rename_base)
 
+        selected_df = selected_df.rename(columns=rename_base)
         selected_df['is_home'] = 1 if team_role == 'home_' else 0
 
         logging.debug(f"Columns after renaming for {team_role.strip('_')} team:")
-        logging.debug(selected_df.columns.tolist())
 
         return selected_df
 
@@ -72,37 +71,22 @@ class ShiftDataPreprocessor:
         """
         logging.debug("Concatenating home and away DataFrames.")
 
-        # Concatenate
-        team_df = pd.concat([home_df, away_df], ignore_index=True)
-
-        # Sort by team and date
+        team_df = pd.concat([home_df, away_df])
         team_df = team_df.sort_values(by=['team', 'date']).reset_index(drop=True)
-
         self.team_df = team_df
 
         logging.debug("Concatenation successful.")
-        logging.debug(f"Concatenated DataFrame shape: {team_df.shape}")
 
         return team_df
 
-    def fill_na_and_zero_with_rolling_mean(self, series: pd.Series, window_size=5) -> pd.Series:
+    def fill_na_and_zero_with_rolling_mean_(self, series: pd.Series, window_size=5) -> pd.Series:
         """
         Fill values that are NaN or 0 using a rolling mean over the last `window_size` valid data points.
         """
-        # Copy the original to avoid mutating
         series_filled = series.copy()
-
-        # Identify rows that are NaN or 0
         mask = series_filled.isna() | (series_filled == 0)
-
-        # We'll create a temporary series where "missing" (NaN or 0) is replaced by NaN,
-        # so that rolling().mean() ignores these values.
         temp_series = series_filled.where(~mask, np.nan)
-
-        # Rolling mean for the series:
         rolled_values = temp_series.rolling(window=window_size, min_periods=1).mean()
-
-        # Now overwrite only the missing (NaN or 0) spots in the original with the rolled values
         series_filled[mask] = rolled_values[mask]
 
         return series_filled
@@ -113,23 +97,19 @@ class ShiftDataPreprocessor:
 
         shifted_df = self.team_df.copy()
 
-        # STEP 1: Shift the features
         for feature in features_to_shift:
             shifted_col = f"{feature}_shifted"
             shifted_df[shifted_col] = shifted_df.groupby('team')[feature].shift(1)
 
-        # STEP 2: Fill NaN or 0 with rolling mean
         for feature in features_to_shift:
             shifted_col = f"{feature}_shifted"
             shifted_df[shifted_col] = (
                 shifted_df
                 .groupby('team')[shifted_col]
-                .apply(lambda grp: self.fill_na_and_zero_with_rolling_mean(grp, window_size=5))
+                .apply(lambda grp: self.fill_na_and_zero_with_rolling_mean_(grp, window_size=5))
                 .reset_index(level=0, drop=True)
             )
 
-        # STEP 4: Drop rows still missing
-        #   If you only want to drop rows where the shifted_col is STILL NaN or 0, do something like:
         for feature in features_to_shift:
             shifted_col = f"{feature}_shifted"
             shifted_df = shifted_df[shifted_df[shifted_col].notna()]  # drop rows that remain NaN
@@ -154,7 +134,7 @@ class ShiftDataPreprocessor:
 
         home_prev = self.team_df[self.team_df['is_home'] == 1][['match_api_id', 'team']].copy()
 
-        shifted_cols = team_df_shifted.filter(like="_shifted").columns  # all cols containing '_shifted'
+        shifted_cols = team_df_shifted.filter(like="_shifted").columns
         columns_needed = ["match_api_id", "team"] + list(shifted_cols)
 
         home_prev = home_prev.merge(
@@ -183,6 +163,6 @@ class ShiftDataPreprocessor:
 
         df_final = self.df_original.drop(columns=original_home_features + original_away_features)
 
+        df_final.dropna(subset=df_final.filter(like="_shifted").columns, inplace=True)
+
         return df_final
-
-
