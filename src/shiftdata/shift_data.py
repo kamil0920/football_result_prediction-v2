@@ -122,8 +122,8 @@ class ShiftDataPreprocessor:
         Merges the shifted home and away features back into the original DataFrame.
 
         Parameters:
-        - home_prev: DataFrame containing shifted home features.
-        - away_prev: DataFrame containing shifted away features.
+        - home_last: DataFrame containing shifted home features.
+        - away_last: DataFrame containing shifted away features.
 
         Returns:
         - Merged DataFrame.
@@ -132,37 +132,49 @@ class ShiftDataPreprocessor:
 
         team_df_shifted = team_df_shifted.reset_index(drop=True)
 
-        home_prev = self.team_df[self.team_df['is_home'] == 1][['match_api_id', 'team']].copy()
+        home_last = self.team_df[self.team_df['is_home'] == 1][['match_api_id', 'team']].copy()
 
         shifted_cols = team_df_shifted.filter(like="_shifted").columns
         columns_needed = ["match_api_id", "team"] + list(shifted_cols)
 
-        home_prev = home_prev.merge(
+        home_last = home_last.merge(
             team_df_shifted[columns_needed],
             on=['match_api_id', 'team'],
             how='left'
         )
 
-        home_prev = home_prev.rename(columns=lambda x: 'home_prev_' + x if x != 'match_api_id' else x)
+        home_last = home_last.rename(columns=lambda x: 'home_last_' + x if x != 'match_api_id' else x)
 
-        away_prev = self.team_df[self.team_df['is_home'] == 0][['match_api_id', 'team']].copy()
+        away_last = self.team_df[self.team_df['is_home'] == 0][['match_api_id', 'team']].copy()
 
-        away_prev = away_prev.merge(
+        away_last = away_last.merge(
             team_df_shifted[columns_needed],
             on=['match_api_id', 'team'],
             how='left'
         )
 
-        away_prev = away_prev.rename(columns=lambda x: 'away_prev_' + x if x != 'match_api_id' else x)
+        away_last = away_last.rename(columns=lambda x: 'away_last_' + x if x != 'match_api_id' else x)
 
-        self.df_original = self.df_original.merge(home_prev, on='match_api_id', how='left')
-        self.df_original = self.df_original.merge(away_prev, on='match_api_id', how='left')
+        self.df_original = self.df_original.merge(home_last, on='match_api_id', how='left')
+        self.df_original = self.df_original.merge(away_last, on='match_api_id', how='left')
 
-        original_home_features = ['home_shoton', 'home_team_goal', 'home_possession', 'home_prev_team' ]
-        original_away_features = ['away_shoton', 'away_team_goal', 'away_possession', 'away_prev_team' ]
+        self.df_original.dropna(subset=self.df_original.filter(like="_shifted").columns, inplace=True)
+        self.df_original.dropna(subset=self.df_original.filter(like="rolling_average").columns, inplace=True)
+
+        rename_shifted = {
+            f'home_last_team_goal_shifted': 'home_last_team_goal',
+            f'home_last_team_shoton_shifted': 'home_last_team_shoton',
+            f'home_last_team_possession_shifted': 'home_last_team_possession',
+            f'away_last_team_goal_shifted': 'away_last_team_goal',
+            f'away_last_team_shoton_shifted': 'away_last_team_shoton',
+            f'away_last_team_possession_shifted': 'away_last_team_possession',
+        }
+
+        self.df_original.rename(columns=rename_shifted, inplace=True)
+
+        original_home_features = ['home_shoton', 'home_team_goal', 'home_possession', 'home_last_team' ]
+        original_away_features = ['away_shoton', 'away_team_goal', 'away_possession', 'away_last_team' ]
 
         df_final = self.df_original.drop(columns=original_home_features + original_away_features)
-
-        df_final.dropna(subset=df_final.filter(like="_shifted").columns, inplace=True)
 
         return df_final
