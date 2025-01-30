@@ -1,6 +1,6 @@
 import pandas as pd
 
-def split_data_for_training():
+def split_data_for_training(N_older_seasons=7):
     import os
     script_dir = os.path.dirname(__file__)
     csv_path = os.path.join(script_dir, '..', '..', 'data', 'preprocessed', 'preprocessed_1.csv')
@@ -15,7 +15,7 @@ def split_data_for_training():
     max_stage = df_matches.loc[df_matches["season"] == newest_season, "stage"].max()
     penultimate_stage = max_stage - 1
 
-    train_seasons = sorted(older_seasons[-7:], reverse=True)
+    train_seasons = sorted(older_seasons[-N_older_seasons:], reverse=True)
 
     X_train_old = df_matches[df_matches["season"].isin(train_seasons)]
     X_train_new = df_matches[(df_matches["season"] == newest_season) & (df_matches["stage"] < penultimate_stage)]

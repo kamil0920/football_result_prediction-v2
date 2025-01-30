@@ -72,7 +72,7 @@ class ShiftDataPreprocessor:
         logging.debug("Concatenating home and away DataFrames.")
 
         team_df = pd.concat([home_df, away_df])
-        team_df = team_df.sort_values(by=['team', 'date']).reset_index(drop=True)
+        team_df = team_df.sort_values(by=['team', 'season', 'stage', 'date']).reset_index(drop=True)
         self.team_df = team_df
 
         logging.debug("Concatenation successful.")
