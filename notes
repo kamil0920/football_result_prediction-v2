@@ -1,0 +1,5 @@
+Problem with use scikit-plot, workaround:
+
+Find  -> /.venv/lib/python3.12/site-packages/scikitplot/metrics.py and plotters.py
+and change:
+from scipy import interp --> from numpy import interp
