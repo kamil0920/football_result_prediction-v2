@@ -12,7 +12,8 @@ def split_data_for_training(N_older_seasons=7):
     newest_season = sorted_seasons[-1]
     older_seasons = sorted_seasons[:-1]
 
-    max_stage = df_matches.loc[df_matches["season"] == newest_season, "stage"].max()
+    # max_stage = df_matches.loc[df_matches["season"] == newest_season, "stage"].max()
+    max_stage = 17
     penultimate_stage = max_stage - 1
 
     train_seasons = sorted(older_seasons[-N_older_seasons:], reverse=True)
@@ -27,13 +28,14 @@ def split_data_for_training(N_older_seasons=7):
     df_tst = df_matches[(df_matches["season"] == newest_season) & (df_matches["stage"] == max_stage)].reset_index(
         drop=True)
 
-    X_trn = df_train.drop(columns=["match_api_id", "result_match", "season", "stage", "date", "home_team", "away_team"])
+    feature_cols_to_drop = ["match_api_id", "result_match", "season", "stage", "date", "home_team", "away_team"]
+    X_trn = df_train.drop(columns=feature_cols_to_drop)
     y_trn = df_train["result_match"]
 
-    X_val = df_val.drop(columns=["match_api_id", "result_match", "season", "stage", "date", "home_team", "away_team"])
+    X_val = df_val.drop(columns=feature_cols_to_drop)
     y_val = df_val["result_match"]
 
-    X_tst = df_tst.drop(columns=["match_api_id", "result_match", "season", "stage", "date", "home_team", "away_team"])
+    X_tst = df_tst.drop(columns=feature_cols_to_drop)
     y_tst = df_tst["result_match"]
 
     return X_trn, y_trn, X_val, y_val, X_tst, y_tst
