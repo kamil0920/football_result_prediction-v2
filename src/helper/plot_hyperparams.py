@@ -69,6 +69,6 @@ def plot_3d_mesh(df: pd.DataFrame, x_col: str, y_col: str,
             yaxis_title=y_col,
             zaxis_title=z_col),
         width=700,
-        margin=dict(r=20, b=10, l=10, t=50)
+        margin=dict(r=40, b=30, l=30, t=65)
     )
     return fig
