@@ -31,8 +31,7 @@ def jitter(df: pd.DataFrame, col: str, amount: float = 1) -> pd.Series:
 import plotly.graph_objects as go
 
 
-def plot_3d_mesh(df: pd.DataFrame, x_col: str, y_col: str,
-                 z_col: str) -> go.Figure:
+def plot_3d_mesh(df: pd.DataFrame, x_col: str, y_col: str, z_col: str) -> go.Figure:
     """
     Create a 3D mesh plot using Plotly.
     This function creates a 3D mesh plot using Plotly, with
@@ -58,17 +57,28 @@ def plot_3d_mesh(df: pd.DataFrame, x_col: str, y_col: str,
     go.Figure
         A Plotly Figure object with the 3D mesh plot.
     """
-    fig = go.Figure(data=[go.Mesh3d(x=df[x_col], y=df[y_col], z=df[z_col],
-                                    intensity=df[z_col] / df[z_col].min(),
-                                    hovertemplate=f"{z_col}: %{{z}}<br>{x_col}: %{{x}}<br>{y_col}: %{{y}}<extra></extra>")],
-                    )
+    fig = go.Figure(
+        data=[go.Mesh3d(
+            x=df[x_col],
+            y=df[y_col],
+            z=df[z_col],
+            intensity=df[z_col] / df[z_col].min(),
+            hovertemplate=(
+                f"{z_col}: %{{z}}<br>"
+                f"{x_col}: %{{x}}<br>"
+                f"{y_col}: %{{y}}<extra></extra>"
+            )
+        )]
+    )
     fig.update_layout(
         title=dict(text=f'{y_col} vs {x_col}'),
         scene=dict(
             xaxis_title=x_col,
             yaxis_title=y_col,
-            zaxis_title=z_col),
-        width=700,
+            zaxis_title=z_col
+        ),
+        width=1200,
+        height=800,
         margin=dict(r=40, b=30, l=30, t=65)
     )
     return fig

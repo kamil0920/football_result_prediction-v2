@@ -30,3 +30,36 @@ def trial2df(trial: Sequence[Dict[str, Any]]) -> pd.DataFrame:
         val['tid'] = t['tid']
         vals.append(val)
     return pd.DataFrame(vals)
+
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from hyperopt import space_eval
+
+
+def extract_trial_results(trials, param_names):
+    """
+    Extracts hyperparameter values and loss from each trial into a DataFrame.
+
+    Parameters:
+      trials (hyperopt.Trials): Trials object from Hyperopt.
+      param_names (list): List of parameter names to extract.
+
+    Returns:
+      DataFrame: Contains one row per trial with the parameter values and loss.
+    """
+    rows = []
+    for trial in trials.trials:
+        row = {}
+        for param in param_names:
+            # Each parameter's value is stored in a list in trial['misc']['vals']
+            if param in trial['misc']['vals']:
+                # Convert to a single value (hp.quniform returns a float)
+                row[param] = trial['misc']['vals'][param][0]
+            else:
+                row[param] = None
+        row['loss'] = trial['result']['loss']
+        rows.append(row)
+    return pd.DataFrame(rows)
