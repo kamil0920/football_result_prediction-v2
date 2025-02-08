@@ -8,6 +8,9 @@ def split_data_for_training(N_older_seasons=7):
 
     df_matches = df_matches.sort_values(by=["season", "stage", "date"])
 
+    season_dummies = pd.get_dummies(df_matches['season'], prefix='season', drop_first=True)
+    df_matches = df_matches.join(season_dummies)
+
     sorted_seasons = sorted(df_matches["season"].unique())
     newest_season = sorted_seasons[-1]
     older_seasons = sorted_seasons[:-1]
