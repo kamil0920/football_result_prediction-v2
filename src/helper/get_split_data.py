@@ -23,8 +23,8 @@ def split_data_for_training(N_older_seasons=7):
 
     X_train_old = df_matches[df_matches["season"].isin(train_seasons)]
     X_train_new = df_matches[(df_matches["season"] == newest_season) & (df_matches["stage"] < penultimate_stage)]
-
     df_train = pd.concat([X_train_old, X_train_new], ignore_index=True)
+
     df_val = df_matches[
         (df_matches["season"] == newest_season) & (df_matches["stage"] == penultimate_stage)].reset_index(
         drop=True)
