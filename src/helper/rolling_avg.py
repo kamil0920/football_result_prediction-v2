@@ -15,11 +15,11 @@ def calculate_rolling_avg_pandas(df, window=5):
     """
 
     # Reshape the data into long format so each team has a single column for goals
-    home_stats = df[['season', 'stage', 'date', 'home_team', 'home_last_team_goal']].rename(
-        columns={'home_team': 'team', 'home_last_team_goal': 'goals'}
+    home_stats = df[['season', 'stage', 'date', 'home_team', 'home_last_team_goal', 'goal_conversion_rate_home']].rename(
+        columns={'home_team': 'team', 'home_last_team_goal': 'goals', 'goal_conversion_rate_home': 'goal_conversion_rate', }
     )
-    away_stats = df[['season', 'stage', 'date','away_team', 'away_last_team_goal']].rename(
-        columns={'away_team': 'team', 'away_last_team_goal': 'goals'}
+    away_stats = df[['season', 'stage', 'date','away_team', 'away_last_team_goal', 'goal_conversion_rate_away']].rename(
+        columns={'away_team': 'team', 'away_last_team_goal': 'goals', 'goal_conversion_rate_away': 'goal_conversion_rate', }
     )
 
     # Combine home and away records into a single dataframe
@@ -27,27 +27,28 @@ def calculate_rolling_avg_pandas(df, window=5):
 
     # Sort by index to maintain match chronology
     team_goals = team_goals.sort_values(by=['team', 'season', 'stage', 'date']).reset_index(drop=True)
-    team_goals['match_order'] = team_goals.groupby('team').cumcount()
 
     # Calculate rolling average of goals for each team
     team_goals['rolling_avg_goals'] = team_goals.groupby('team')['goals'].transform(lambda x: x.rolling(window=window, min_periods=1).mean())
+    team_goals['rolling_goal_stability'] = team_goals.groupby('team')['goal_conversion_rate'].transform(lambda x: x.rolling(window=window, min_periods=1).std().fillna(0))
+
 
     # Remove duplicate rows before merging (fixes memory explosion issue)
     team_goals = team_goals.drop_duplicates(subset=['team', 'season', 'stage', 'date'])
 
     # Merge rolling average back to original DataFrame, keeping only necessary columns
     df = df.merge(
-        team_goals[['team', 'season', 'stage', 'date', 'rolling_avg_goals']],
+        team_goals[['team', 'season', 'stage', 'date', 'rolling_avg_goals', 'goal_conversion_rate']],
         left_on=['home_team', 'season', 'stage', 'date'],
         right_on=['team', 'season', 'stage', 'date'],
         how='left'
-    ).rename(columns={'rolling_avg_goals': 'rolling_avg_goals_home'}).drop(columns=['team'])
+    ).rename(columns={'rolling_avg_goals': 'rolling_avg_goals_home', 'rolling_goal_stability': 'rolling_goal_stability_home'}).drop(columns=['team'])
 
     df = df.merge(
-        team_goals[['team', 'season', 'stage', 'date', 'rolling_avg_goals']],
+        team_goals[['team', 'season', 'stage', 'date', 'rolling_avg_goals', 'goal_conversion_rate']],
         left_on=['away_team', 'season', 'stage', 'date'],
         right_on=['team', 'season', 'stage', 'date'],
         how='left'
-    ).rename(columns={'rolling_avg_goals': 'rolling_avg_goals_away'}).drop(columns=['team'])
+    ).rename(columns={'rolling_avg_goals': 'rolling_avg_goals_away', 'rolling_goal_stability': 'rolling_goal_stability_away'}).drop(columns=['team'])
 
     return df

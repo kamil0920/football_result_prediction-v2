@@ -3,7 +3,7 @@ import pandas as pd
 def split_data_for_training(N_older_seasons=7):
     import os
     script_dir = os.path.dirname(__file__)
-    csv_path = os.path.join(script_dir, '..', '..', 'data', 'preprocessed', 'preprocessed_1.csv')
+    csv_path = os.path.join(script_dir, '..', '..', 'data', 'engineered', 'raw_engineered_features.csv')
     df_matches = pd.read_csv(csv_path)
 
     df_matches = df_matches.sort_values(by=["season", "stage", "date"])
