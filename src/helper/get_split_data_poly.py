@@ -88,9 +88,9 @@ def split_data_for_training(N_older_seasons=7):
     val_df = pd.DataFrame(X_val_processed, columns=feature_names)
     tst_df = pd.DataFrame(X_test_processed, columns=feature_names)
 
-    # Add target variables
-    trn_df['result_match'] = y_trn.values
-    val_df['result_match'] = y_val.values
-    tst_df['result_match'] = y_tst.values
+    # Convert all columns to numeric, coercing errors to NaN if needed
+    trn_df = trn_df.apply(pd.to_numeric, errors='coerce')
+    val_df = val_df.apply(pd.to_numeric, errors='coerce')
+    tst_df = tst_df.apply(pd.to_numeric, errors='coerce')
 
-    return X_trn, y_trn, X_val, y_val, X_tst, y_tst
+    return trn_df, y_trn, val_df, y_val, tst_df, y_tst
