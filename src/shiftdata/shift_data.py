@@ -178,3 +178,16 @@ class ShiftDataPreprocessor:
         df_final = self.df_original.drop(columns=original_home_features + original_away_features)
 
         return df_final
+
+    # # =============================================
+    # # 3. Temporal Aggregation Features
+    # # =============================================
+    #
+    # # # Possession/strength ratio trends
+    # df['possession_strength_ratio_home'] = (df['home_last_team_possession'] / (df['team_strength_home'] + 1e-6))
+    # df['possession_strength_ratio_away'] = (df['away_last_team_possession'] / (df['team_strength_away'] + 1e-6))
+    #
+    # df['psr_trend_3game'] = df['possession_strength_ratio'].diff(periods=3).interpolate(method='linear',
+    #                                                                                     limit_direction='both')
+    # df['psr_trend_3game'] = df['possession_strength_ratio'].diff(periods=3).interpolate(method='linear',
+    #                                                                                     limit_direction='both')

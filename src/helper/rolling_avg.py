@@ -38,14 +38,14 @@ def calculate_rolling_avg_pandas(df, window=5):
 
     # Merge rolling average back to original DataFrame, keeping only necessary columns
     df = df.merge(
-        team_goals[['team', 'season', 'stage', 'date', 'rolling_avg_goals', 'goal_conversion_rate']],
+        team_goals[['team', 'season', 'stage', 'date', 'rolling_avg_goals', 'rolling_goal_stability']],
         left_on=['home_team', 'season', 'stage', 'date'],
         right_on=['team', 'season', 'stage', 'date'],
         how='left'
     ).rename(columns={'rolling_avg_goals': 'rolling_avg_goals_home', 'rolling_goal_stability': 'rolling_goal_stability_home'}).drop(columns=['team'])
 
     df = df.merge(
-        team_goals[['team', 'season', 'stage', 'date', 'rolling_avg_goals', 'goal_conversion_rate']],
+        team_goals[['team', 'season', 'stage', 'date', 'rolling_avg_goals', 'rolling_goal_stability']],
         left_on=['away_team', 'season', 'stage', 'date'],
         right_on=['team', 'season', 'stage', 'date'],
         how='left'
