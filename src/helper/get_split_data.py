@@ -1,10 +1,15 @@
 import pandas as pd
 
-def split_data_for_training(N_older_seasons=7):
+
+def split_data_for_training(N_older_seasons=7, csv_path="data/engineered/raw_engineered_features.csv"):
+    import pandas as pd
     import os
+
     script_dir = os.path.dirname(__file__)
-    csv_path = os.path.join(script_dir, '..', '..', 'data', 'engineered', 'raw_engineered_features.csv')
-    df_matches = pd.read_csv(csv_path)
+    repo_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
+    full_path = os.path.join(repo_root, csv_path)
+
+    df_matches = pd.read_csv(full_path)
 
     df_matches = df_matches.sort_values(by=["season", "stage", "date"])
 
