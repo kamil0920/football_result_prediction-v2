@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def split_data_for_training(N_older_seasons=7, csv_path="data/engineered/raw_engineered_features.csv"):
+def split_data_for_training(N_older_seasons=7, csv_path="data/engineered/raw_engineered_features.csv", stage=3):
     import pandas as pd
     import os
 
@@ -18,7 +18,7 @@ def split_data_for_training(N_older_seasons=7, csv_path="data/engineered/raw_eng
     older_seasons = sorted_seasons[:-1]
 
     # max_stage = df_matches.loc[df_matches["season"] == newest_season, "stage"].max()
-    max_stage = 17
+    max_stage = stage
     penultimate_stage = max_stage - 1
 
     train_seasons = sorted(older_seasons[-N_older_seasons:], reverse=True)
