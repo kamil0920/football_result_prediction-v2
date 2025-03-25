@@ -14,7 +14,6 @@ def get_player_overall_rating_from_previous_N_last_(player_id, match_date, df_pl
 
     filtered_subset = filtered_sorted.head(n_previous)
 
-    # Compute the means
     latest_rating = filtered_subset['overall_rating'].mean()
     acceleration_rating = filtered_subset['acceleration'].mean()
     strength_rating = filtered_subset['strength'].mean()
@@ -38,10 +37,8 @@ def get_player_id_for_team_(
     same_team_matches = df_matches[df_matches[f"{team_type}_team"] == team_id]
 
     current_match_date = row["date"]
-    same_team_matches = same_team_matches[same_team_matches["date"] < current_match_date]
-    same_team_matches = same_team_matches.sort_values(by="date", ascending=False)
-    same_team_matches = same_team_matches.head(n_previous)
-    col_values = same_team_matches[player].dropna()
+    col_values = same_team_matches[same_team_matches["date"] < current_match_date].sort_values(by="date", ascending=False).head(n_previous)[player].dropna()
+    # col_values = same_team_matches[player].dropna()
 
     if col_values.empty:
         return np.nan
