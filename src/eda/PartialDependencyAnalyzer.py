@@ -7,7 +7,7 @@ from sklearn.inspection import PartialDependenceDisplay
 class PartialDependenceAnalyzer:
     """Class for creating and visualizing partial dependence plots with XGBoost models"""
 
-    def __init__(self, features, model_params=None,
+    def __init__(self, features, model_params=None, plot_type='average',
                  figsize=(8, 4), nrows=2, ncols=2,
                  threshold=0.5, line_style='--'):
         """
@@ -16,6 +16,7 @@ class PartialDependenceAnalyzer:
         Args:
             features (list): List of feature names to analyze
             model_params (dict): Parameters for XGBoost classifier
+            plot_type (str): Parameters for choose partial dependence vs ice plot
             figsize (tuple): Figure dimensions (width, height)
             nrows (int): Number of rows in subplot grid
             ncols (int): Number of columns in subplot grid
@@ -25,11 +26,12 @@ class PartialDependenceAnalyzer:
         self.features = features
         self.model_params = model_params or {
             'booster': 'gbtree',
-            'objective': 'reg:logistic',
+            'objective': 'binary:logistic',
             'n_estimators': 300,
             'max_depth': 4,
             'min_child_weight': 3
         }
+        self.plot_type = plot_type
         self.figsize = figsize
         self.nrows = nrows
         self.ncols = ncols
@@ -58,7 +60,8 @@ class PartialDependenceAnalyzer:
         PartialDependenceDisplay.from_estimator(
             self.pipeline,
             X=X,
-            kind='average',
+            kind=self.plot_type,
+            subsample=30,
             features=self.features,
             ax=axes
         )
