@@ -112,8 +112,7 @@ class ShiftDataPreprocessor:
 
         for feature in features_to_shift:
             shifted_col = f"{feature}_shifted"
-            shifted_df = shifted_df[shifted_df[shifted_col].notna()]  # drop rows that remain NaN
-            shifted_df = shifted_df[shifted_df[shifted_col] != 0]  # drop rows that remain 0
+            shifted_df = shifted_df[shifted_df[shifted_col].notna()]
 
         return shifted_df
 
@@ -162,12 +161,12 @@ class ShiftDataPreprocessor:
         self.df_original.dropna(subset=self.df_original.filter(like="rolling_average").columns, inplace=True)
 
         rename_shifted = {
-            f'home_last_team_goal_shifted': 'home_last_team_goal',
-            f'home_last_team_shoton_shifted': 'home_last_team_shoton',
-            f'home_last_team_possession_shifted': 'home_last_team_possession',
-            f'away_last_team_goal_shifted': 'away_last_team_goal',
-            f'away_last_team_shoton_shifted': 'away_last_team_shoton',
-            f'away_last_team_possession_shifted': 'away_last_team_possession',
+            f'home_last_team_goal_shifted': 'home_team_last_goal',
+            f'home_last_team_shoton_shifted': 'home_team_last_shoton',
+            f'home_last_team_possession_shifted': 'home_team_last_possession',
+            f'away_last_team_goal_shifted': 'away_team_last_goal',
+            f'away_last_team_shoton_shifted': 'away_team_last_shoton',
+            f'away_last_team_possession_shifted': 'away_team_last_possession',
         }
 
         self.df_original.rename(columns=rename_shifted, inplace=True)
