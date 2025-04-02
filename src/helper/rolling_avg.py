@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def calculate_rolling_avg_pandas(df, window=5):
+def calculate_rolling_avg_pandas(df, window=5, ):
     """
     Calculates the rolling average of goals for each team across the last 'window' matches,
     considering both home and away games.
@@ -30,19 +30,19 @@ def calculate_rolling_avg_pandas(df, window=5):
     team_goals = team_goals.sort_values(by=['team', 'season', 'stage', 'date']).reset_index(drop=True)
 
     team_goals['rolling_avg_goals'] = team_goals.groupby('team')['goals'].transform(
-        lambda x: x.ewm(span=window, adjust=False).mean())
+        lambda x: x.ewm(span=window,).mean())
     team_goals['rolling_stability_goal'] = team_goals.groupby('team')['goals'].transform(
-        lambda x: x.ewm(span=window, adjust=False).std())
+        lambda x: x.ewm(span=window,).std())
 
     team_goals['rolling_avg_goals_conversion_rate'] = team_goals.groupby('team')['goal_conversion_rate'].transform(
-        lambda x: x.ewm(span=window, adjust=False).mean())
+        lambda x: x.ewm(span=window,).mean())
     team_goals['rolling_stability_goals_conversion_rate'] = team_goals.groupby('team')[
         'goal_conversion_rate'].transform(lambda x: x.ewm(span=window, adjust=False).std())
 
     team_goals['rolling_avg_shoton'] = team_goals.groupby('team')['last_team_shoton'].transform(
-        lambda x: x.ewm(span=window, adjust=False).mean())
+        lambda x: x.ewm(span=window,).mean())
     team_goals['rolling_stability_shoton'] = team_goals.groupby('team')['last_team_shoton'].transform(
-        lambda x: x.ewm(span=window, adjust=False).std())
+        lambda x: x.ewm(span=window,).std())
 
     team_goals = team_goals.drop_duplicates(subset=['team', 'season', 'stage', 'date'])
 
